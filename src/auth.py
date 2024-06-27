@@ -14,7 +14,7 @@ def get_token(username, password):
     headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'x-app-key': environ['APP_KEY'],
-    'Authorization': f'Basic {environ['AUTHORIZATION']}'
+    'Authorization': f"Basic {environ['AUTHORIZATION']}"
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -49,7 +49,8 @@ def authenticate_this(function):
         pass_container = st.empty()
         btn_container = st.empty()
         alert_container = st.empty()
-
+        info_contaimer = st.empty()
+        info_contaimer.write("Logue com suas credenciais do Ópera Cloud.")
         username = user_container.text_input("Username")
         password = pass_container.text_input("Password", type="password")
         login_button = btn_container.button("Login")
@@ -64,5 +65,6 @@ def authenticate_this(function):
         pass_container.empty()
         btn_container.empty()
         alert_container.empty()
+        info_contaimer.empty()
         function()
 
