@@ -9,6 +9,11 @@ import pandas as pd
 import datetime
 import plotly.express as px
 
+
+def to_money(value):
+    return "{:,.2f}".format(value).replace(',', 'X').replace('.', ',').replace('X', '.')
+
+
 st.set_page_config(layout="wide")
 
 def main():
@@ -113,9 +118,6 @@ def main():
         if cashier_name_filter != 'Todos':
             df = df[df['cashierName'] == cashier_name_filter]
 
-        #---------------- Show dataframe
-        st.dataframe(df, hide_index=True)
-
         # --------------- Valores agrupados por código de lançamento
 
         title_1 = f"Receita de {filter_revenue_group} - {data_inicial} a {data_final}"
@@ -132,8 +134,8 @@ def main():
 
 
         # --------------- Valores agrupados por dia da semana
-        dias_da_semana = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-        df["dayOfWeek"] = pd.Categorical(df["dayOfWeek"], categories=dias_da_semana, ordered=True)
+        sorter_day_of_week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        df["dayOfWeek"] = pd.Categorical(df["dayOfWeek"], categories=sorter_day_of_week, ordered=True)
 
         df_grouped_by_day_of_week = df.groupby(["dayOfWeek", "transactionCodeName"])["transactionAmount"].sum().reset_index()
         fig_prod_2 = px.bar(df_grouped_by_day_of_week.sort_values("dayOfWeek"), 
@@ -144,6 +146,18 @@ def main():
                         orientation="v")
 
         st.plotly_chart(fig_prod_2, use_container_width=True)
+
+
+        df['transactionDate'] = pd.to_datetime(df['transactionDate']).dt.strftime("%d/%m/%Y")
+        df['postingDate'] = pd.to_datetime(df['postingDate']).dt.strftime("%d/%m/%Y")
+        df['revenueDate'] = pd.to_datetime(df['revenueDate']).dt.strftime("%d/%m/%Y")
+        df['transactionNo'] = df['transactionNo'].astype(str)
+        df['transactionAmount'] = df['transactionAmount'].apply(to_money)
+
+        #---------------- Show dataframe
+        cols_to_show = ["transactionDate", "transactionCodeName", "transactionAmount", "reference", "remark", "guestInfo.guestName", "guestInfo.roomId", "guestInfo.confirmationNo"]
+
+        st.dataframe(df[cols_to_show], hide_index=True)
 
 
 if __name__ == "__main__":
