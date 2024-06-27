@@ -75,4 +75,6 @@ def authenticate_this(function):
         info_contaimer.empty()
         st.session_state['logged'] = True
         function()
-
+    else:
+        if login_button:
+            st.error("Acesso não permitido.")
