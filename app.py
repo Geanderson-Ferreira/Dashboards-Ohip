@@ -92,16 +92,11 @@ def main():
             codes_to_filter = get_codes_by_group(filter_hotel, st.session_state['token'], st.session_state['transaction_groups'][filter_revenue_group])
             df = df[df['transactionCode'].isin(codes_to_filter)]
         
-
-
         #------------ JOINS
         # df.join(df_transaction_names.set_index('codes'), on='transactionCode')
 
         df = df.set_index('transactionCode').join(df_transaction_names.set_index('codes'))
         df = df.set_index('cashierInfo.cashierId').join(st.session_state['cashier_names'].set_index('cahierId'))
-
-
-
 
         #------------ Filtro transaction Types
         transaction_type_filter = st.sidebar.selectbox("Tipo de Transação", ["Todos"] + sorted(df["transactionType"].unique()))
@@ -135,6 +130,20 @@ def main():
 
         st.sidebar.write("Nº Resultados:", dados['totalResults'])
 
+
+        # --------------- Valores agrupados por dia da semana
+        dias_da_semana = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        df["dayOfWeek"] = pd.Categorical(df["dayOfWeek"], categories=dias_da_semana, ordered=True)
+
+        df_grouped_by_day_of_week = df.groupby(["dayOfWeek", "transactionCodeName"])["transactionAmount"].sum().reset_index()
+        fig_prod_2 = px.bar(df_grouped_by_day_of_week.sort_values("dayOfWeek"), 
+                        x="dayOfWeek", 
+                        y="transactionAmount", 
+                        color="transactionCodeName",
+                        title="Detalhamento por dia da semana.",
+                        orientation="v")
+
+        st.plotly_chart(fig_prod_2, use_container_width=True)
 
 
 if __name__ == "__main__":
