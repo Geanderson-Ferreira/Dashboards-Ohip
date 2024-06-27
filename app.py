@@ -45,6 +45,10 @@ def main():
         st.error(f"Consulta retornou mais que {int(limit_allowed_return_transactions)} registros, reduza seu filtro.")
         return
     
+    if dados['totalResults'] == 0:
+        st.info(f"Sua consulta não retornou nenhum dado.")
+        return
+    
 
     else:
         st.write(dados['totalResults'])
