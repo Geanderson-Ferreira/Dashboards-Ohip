@@ -24,7 +24,6 @@ def main():
     data_inicial = st.sidebar.date_input("Data Inicial", datetime.datetime.now() - datetime.timedelta(days=1))
     data_final = st.sidebar.date_input("Data Final", datetime.datetime.now() - datetime.timedelta(days=1))
 
-
     #-------------------- Validações de Data
     if data_final < data_inicial:
         st.error("Data inicial não pode ser maior do que data final.")
@@ -39,16 +38,14 @@ def main():
     # CRIA DF
     dados = get_transactions(filter_hotel, data_inicial, data_final, st.session_state['token'], limit=limit_allowed_return_transactions)
 
-
     #------------- Validação do total de resultados (Só mostra se obter tudo)
     if dados['totalResults'] > int(limit_allowed_return_transactions):
         st.error(f"Consulta retornou mais que {int(limit_allowed_return_transactions)} registros, reduza seu filtro.")
         return
-    
+
     if dados['totalResults'] == 0:
         st.info(f"Sua consulta não retornou nenhum dado.")
         return
-    
 
     else:
         st.write(dados['totalResults'])
@@ -58,9 +55,16 @@ def main():
         df = pd.json_normalize(data)
         df = df.fillna('')
 
+        df['transactionDate'] = pd.to_datetime(df['transactionDate'])
+        df['postingDate'] = pd.to_datetime(df['postingDate'])
+        df['revenueDate'] = pd.to_datetime(df['revenueDate'])
+
+        df['dayOfWeek'] = df['postingDate'].dt.day_name()
+
         #----------------- Criação de DFs para Joins
         #----------------- transactionName / cashierNames
         df_transaction_names = pd.DataFrame(get_transaction_names(filter_hotel, st.session_state['token']))
+
         if 'cashier_names' not in st.session_state:
             st.session_state['cashier_names'] = pd.DataFrame(get_user_names(st.session_state['token'], filter_hotel))
 
@@ -82,7 +86,6 @@ def main():
         df = df.set_index('transactionCode').join(df_transaction_names.set_index('codes'))
         df = df.set_index('cashierInfo.cashierId').join(st.session_state['cashier_names'].set_index('cahierId'))
 
-
         #------------ Filtro transaction Types
         transaction_type_filter = st.sidebar.selectbox("Tipo de Transação", ["Todos"] + sorted(df["transactionType"].unique()))
         if transaction_type_filter != "Todos":
@@ -91,14 +94,12 @@ def main():
         #------------- Filtro de Transaction code Name
         transaction_name_filter = st.sidebar.selectbox("Código de Transação", ["Todos"] + sorted(df["transactionCodeName"].unique()))
 
-
         #----------- Filtro de usuários
         cashier_name_filter = st.sidebar.selectbox("Usuário", ["Todos"] + sorted(df["cashierName"].unique()))
         if cashier_name_filter != 'Todos':
             df = df[df['cashierName'] == cashier_name_filter]
 
         st.dataframe(df, hide_index=True)
-
 
 if __name__ == "__main__":
     authenticate_this(main)
