@@ -3,8 +3,12 @@ import time
 import requests
 from os import environ
 from dotenv import load_dotenv
+from datetime import datetime
+import time
+
 
 load_dotenv()
+
 
 def get_token(username, password):
 
@@ -58,6 +62,11 @@ def authenticate_this(function):
         if login_button:
             auth.check(username, password)
 
+    if 'logged' in st.session_state:
+        if st.session_state['logged']:
+            function()
+            return
+
     if auth.is_authenticated:
         alert_container.success("Login successful!")
         time.sleep(1)
@@ -66,5 +75,6 @@ def authenticate_this(function):
         btn_container.empty()
         alert_container.empty()
         info_contaimer.empty()
+        st.session_state['logged'] = True
         function()
 
