@@ -7,6 +7,7 @@ from src.get_transaction_groups import get_transaction_groups
 from src.get_transaction_codes_by_group import get_codes_by_group
 import pandas as pd
 import datetime
+import plotly.express as px
 
 st.set_page_config(layout="wide")
 
@@ -35,6 +36,8 @@ def main():
         st.error(f"Período máximo permitido {limit_of_interval_of_dates_inputs} dias.")
         return
 
+    st.sidebar.divider()
+
     # CRIA DF
     dados = get_transactions(filter_hotel, data_inicial, data_final, st.session_state['token'], limit=limit_allowed_return_transactions)
 
@@ -48,7 +51,7 @@ def main():
         return
 
     else:
-        st.write(dados['totalResults'])
+        
 
         if 'journalPostings' in dados and 'postings' in dados['journalPostings']:
             data = dados['journalPostings']['postings']
@@ -69,14 +72,16 @@ def main():
             st.session_state['cashier_names'] = pd.DataFrame(get_user_names(st.session_state['token'], filter_hotel))
 
         #------------ Filtro de negativos
-        filter_negativos = st.sidebar.checkbox("Filtrar por Negativos", value=False, key=None, help=None, on_change=None, disabled=False, label_visibility="visible")
+        filter_negativos = st.sidebar.checkbox("Filtrar por Estornos", value=False, key=None, help=None, on_change=None, disabled=False, label_visibility="visible")
         if filter_negativos:
+            # df= df[((df['transactionAmount'] < 0) & (df['transactionType'] == 'Revenue')) | ((df['transactionAmount'] > 0) & (df['transactionType'] == 'Payment'))]
             df = df[df['transactionAmount'] < 0]
 
         #------------- Filtro de Grupo de Receita
         if 'transaction_groups' not in st.session_state:
             st.session_state['transaction_groups'] = get_transaction_groups(filter_hotel, st.session_state['token']) 
         filter_revenue_group = st.sidebar.selectbox("Grupo de Receita", ["Todos"] + sorted(st.session_state['transaction_groups']))
+
         
         if filter_revenue_group != 'Todos':
             codes_to_filter = get_codes_by_group(filter_hotel, st.session_state['token'], st.session_state['transaction_groups'][filter_revenue_group])
@@ -93,6 +98,9 @@ def main():
 
         #------------- Filtro de Transaction code Name
         transaction_name_filter = st.sidebar.selectbox("Código de Transação", ["Todos"] + sorted(df["transactionCodeName"].unique()))
+        if transaction_name_filter != "Todos":
+            df = df[df['transactionCodeName'] == transaction_name_filter]
+
 
         #----------- Filtro de usuários
         cashier_name_filter = st.sidebar.selectbox("Usuário", ["Todos"] + sorted(df["cashierName"].unique()))
@@ -100,6 +108,20 @@ def main():
             df = df[df['cashierName'] == cashier_name_filter]
 
         st.dataframe(df, hide_index=True)
+
+        # --------------- Valores agrupados por código de lançamento
+
+        title_1 = f"Receita de {filter_revenue_group} - {data_inicial} a {data_final}"
+        df_grouped_by_code = df.groupby(['postingDate', "transactionCodeName"])["transactionAmount"].sum().reset_index()
+        fig_prod = px.bar(df_grouped_by_code, 
+                        x='transactionCodeName', 
+                        y="transactionAmount", 
+                        color="transactionCodeName",
+                        title=title_1,
+                        orientation="v")
+        st.plotly_chart(fig_prod, use_container_width=False)
+
+        st.sidebar.write("Nº Resultados:", dados['totalResults'])
 
 if __name__ == "__main__":
     authenticate_this(main)
