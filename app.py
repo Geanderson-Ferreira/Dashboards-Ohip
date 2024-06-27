@@ -51,7 +51,6 @@ def main():
         return
 
     else:
-        
 
         if 'journalPostings' in dados and 'postings' in dados['journalPostings']:
             data = dados['journalPostings']['postings']
@@ -64,6 +63,8 @@ def main():
 
         df['dayOfWeek'] = df['postingDate'].dt.day_name()
 
+
+
         #----------------- Criação de DFs para Joins
         #----------------- transactionName / cashierNames
         df_transaction_names = pd.DataFrame(get_transaction_names(filter_hotel, st.session_state['token']))
@@ -71,25 +72,36 @@ def main():
         if 'cashier_names' not in st.session_state:
             st.session_state['cashier_names'] = pd.DataFrame(get_user_names(st.session_state['token'], filter_hotel))
 
+
+
         #------------ Filtro de negativos
         filter_negativos = st.sidebar.checkbox("Filtrar por Estornos", value=False, key=None, help=None, on_change=None, disabled=False, label_visibility="visible")
         if filter_negativos:
             # df= df[((df['transactionAmount'] < 0) & (df['transactionType'] == 'Revenue')) | ((df['transactionAmount'] > 0) & (df['transactionType'] == 'Payment'))]
             df = df[df['transactionAmount'] < 0]
 
+
+
+
         #------------- Filtro de Grupo de Receita
         if 'transaction_groups' not in st.session_state:
             st.session_state['transaction_groups'] = get_transaction_groups(filter_hotel, st.session_state['token']) 
         filter_revenue_group = st.sidebar.selectbox("Grupo de Receita", ["Todos"] + sorted(st.session_state['transaction_groups']))
 
-        
         if filter_revenue_group != 'Todos':
             codes_to_filter = get_codes_by_group(filter_hotel, st.session_state['token'], st.session_state['transaction_groups'][filter_revenue_group])
             df = df[df['transactionCode'].isin(codes_to_filter)]
         
+
+
         #------------ JOINS
+        # df.join(df_transaction_names.set_index('codes'), on='transactionCode')
+
         df = df.set_index('transactionCode').join(df_transaction_names.set_index('codes'))
         df = df.set_index('cashierInfo.cashierId').join(st.session_state['cashier_names'].set_index('cahierId'))
+
+
+
 
         #------------ Filtro transaction Types
         transaction_type_filter = st.sidebar.selectbox("Tipo de Transação", ["Todos"] + sorted(df["transactionType"].unique()))
@@ -101,12 +113,12 @@ def main():
         if transaction_name_filter != "Todos":
             df = df[df['transactionCodeName'] == transaction_name_filter]
 
-
         #----------- Filtro de usuários
         cashier_name_filter = st.sidebar.selectbox("Usuário", ["Todos"] + sorted(df["cashierName"].unique()))
         if cashier_name_filter != 'Todos':
             df = df[df['cashierName'] == cashier_name_filter]
 
+        #---------------- Show dataframe
         st.dataframe(df, hide_index=True)
 
         # --------------- Valores agrupados por código de lançamento
@@ -122,6 +134,8 @@ def main():
         st.plotly_chart(fig_prod, use_container_width=False)
 
         st.sidebar.write("Nº Resultados:", dados['totalResults'])
+
+
 
 if __name__ == "__main__":
     authenticate_this(main)

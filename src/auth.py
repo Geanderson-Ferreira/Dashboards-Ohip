@@ -77,4 +77,4 @@ def authenticate_this(function):
         function()
     else:
         if login_button:
-            st.error("Acesso não permitido.")
+            st.error("Wrong Credentials.")
