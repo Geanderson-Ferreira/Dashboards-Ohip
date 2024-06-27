@@ -9,10 +9,8 @@ import pandas as pd
 import datetime
 import plotly.express as px
 
-
 def to_money(value):
     return "{:,.2f}".format(value).replace(',', 'X').replace('.', ',').replace('X', '.')
-
 
 st.set_page_config(layout="wide")
 
@@ -21,7 +19,7 @@ def main():
     limit_allowed_return_transactions = "50000"
     limit_of_interval_of_dates_inputs = 15
 
-    st.write("Relatório de Lançamentos")
+    st.title("Revenue Viewer")
     # Carregar dados de hotéis
     hoteis = pd.read_csv("https://raw.githubusercontent.com/Geanderson-Ferreira/open-data-base/main/hoteis.csv")['idHoteis']
 
@@ -68,8 +66,6 @@ def main():
 
         df['dayOfWeek'] = df['postingDate'].dt.day_name()
 
-
-
         #----------------- Criação de DFs para Joins
         #----------------- transactionName / cashierNames
         df_transaction_names = pd.DataFrame(get_transaction_names(filter_hotel, st.session_state['token']))
@@ -77,16 +73,11 @@ def main():
         if 'cashier_names' not in st.session_state:
             st.session_state['cashier_names'] = pd.DataFrame(get_user_names(st.session_state['token'], filter_hotel))
 
-
-
         #------------ Filtro de negativos
         filter_negativos = st.sidebar.checkbox("Filtrar por Estornos", value=False, key=None, help=None, on_change=None, disabled=False, label_visibility="visible")
         if filter_negativos:
             # df= df[((df['transactionAmount'] < 0) & (df['transactionType'] == 'Revenue')) | ((df['transactionAmount'] > 0) & (df['transactionType'] == 'Payment'))]
             df = df[df['transactionAmount'] < 0]
-
-
-
 
         #------------- Filtro de Grupo de Receita
         if 'transaction_groups' not in st.session_state:
@@ -142,7 +133,7 @@ def main():
                         x="dayOfWeek", 
                         y="transactionAmount", 
                         color="transactionCodeName",
-                        title="Detalhamento por dia da semana.",
+                        title="Detalhamento por dia da semana",
                         orientation="v")
 
         st.plotly_chart(fig_prod_2, use_container_width=True)
@@ -157,7 +148,8 @@ def main():
         #---------------- Show dataframe
         cols_to_show = ["transactionDate", "transactionCodeName", "transactionAmount", "reference", "remark", "guestInfo.guestName", "guestInfo.roomId", "guestInfo.confirmationNo"]
 
-        st.dataframe(df[cols_to_show], hide_index=True)
+        st.write("Relatório de Lancamentos")
+        st.dataframe(df[cols_to_show], hide_index=True, use_container_width=True)
 
 
 if __name__ == "__main__":

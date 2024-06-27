@@ -46,12 +46,14 @@ def authenticate_this(function):
 
     # Página de login
     if 'token' not in st.session_state:
-
+        
+        title_container = st.empty()
         user_container = st.empty()
         pass_container = st.empty()
         btn_container = st.empty()
         alert_container = st.empty()
         info_contaimer = st.empty()
+        title_container.title("Revenue Viewer")
         info_contaimer.write("Logue com suas credenciais do Ópera Cloud.")
         username = user_container.text_input("Username")
         password = pass_container.text_input("Password", type="password")
@@ -68,6 +70,7 @@ def authenticate_this(function):
     if auth.is_authenticated:
         alert_container.success("Login successful!")
         time.sleep(1)
+        title_container.empty()
         user_container.empty()
         pass_container.empty()
         btn_container.empty()
