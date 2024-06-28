@@ -41,8 +41,25 @@ def main():
 
     st.sidebar.divider()
 
+    if 'data_final' in st.session_state:
+        if filter_hotel != st.session_state['filter_hotel'] or data_inicial != st.session_state['data_inicial'] or data_final != st.session_state['data_final']:
+            dados = get_transactions(filter_hotel, data_inicial, data_final, st.session_state['token'], limit=limit_allowed_return_transactions)
+            st.session_state['dados'] = dados
+            print("Segunda vez.")
+            st.session_state['data_final'] = data_final
+            st.session_state['data_inicial'] = data_inicial
+            st.session_state['filter_hotel'] = filter_hotel
+    else:
+        st.session_state['data_final'] = data_final
+        st.session_state['data_inicial'] = data_inicial
+        st.session_state['filter_hotel'] = filter_hotel
+        dados = get_transactions(filter_hotel, data_inicial, data_final, st.session_state['token'], limit=limit_allowed_return_transactions)
+        print("Primeira vez")
+        st.session_state['dados'] = dados
+
+    dados = st.session_state['dados']
     # CRIA DF
-    dados = get_transactions(filter_hotel, data_inicial, data_final, st.session_state['token'], limit=limit_allowed_return_transactions)
+    # dados = get_transactions(filter_hotel, data_inicial, data_final, st.session_state['token'], limit=limit_allowed_return_transactions)
 
     #------------- Validação do total de resultados (Só mostra se obter tudo)
     if dados['totalResults'] > int(limit_allowed_return_transactions):
