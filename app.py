@@ -20,6 +20,7 @@ def main():
     limit_of_interval_of_dates_inputs = 15
 
     st.title("Revenue Viewer")
+    st.sidebar.title("Obter Dados")
     # Carregar dados de hotéis
     hoteis = pd.read_csv("https://raw.githubusercontent.com/Geanderson-Ferreira/open-data-base/main/hoteis.csv")['idHoteis']
 
@@ -40,6 +41,7 @@ def main():
         return
 
     st.sidebar.divider()
+    st.sidebar.title("Partições")
 
     if 'data_final' in st.session_state:
         if filter_hotel != st.session_state['filter_hotel'] or data_inicial != st.session_state['data_inicial'] or data_final != st.session_state['data_final']:
