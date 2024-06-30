@@ -4,4 +4,3 @@ def to_money(value):
 
 def hoteis():
     pass
-
