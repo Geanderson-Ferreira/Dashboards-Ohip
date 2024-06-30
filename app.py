@@ -28,12 +28,12 @@ def main():
         for module in modules:
             if globals()['btn' + module]:
                 st.session_state['module'] = module
-    
+
     if 'module' in st.session_state:
         if st.session_state['created_module_buttons']:
             for module in modules:
                 globals()['ctn' + module].empty()
-                st.session_state['created_module_buttons'] = False
+            st.session_state['created_module_buttons'] = False
 
         authenticate_this(globals()[level_of_access[st.session_state['module']]])
 
