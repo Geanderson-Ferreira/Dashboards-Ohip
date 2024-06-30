@@ -1,0 +1,1 @@
+#"BlockReservations" "CancellationInfo" "Deposits" "GuestDeviceNotification" "GuestServiceStatus" "Indicators" "MasterInfo" "Reservation" "ReservationID" "RevenuesAndBalances" "RoomAssignedByAI" "TaxType"
