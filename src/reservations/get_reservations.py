@@ -37,4 +37,6 @@ def get_reservations(hotel, token, filters: dict):
 
   if response.status_code == 200:
     return response.json()
-  
+  else:
+     st.error(f"{response.text} on get_reservations")
+     return False
