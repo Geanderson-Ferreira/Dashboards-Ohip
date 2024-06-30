@@ -1,6 +1,7 @@
 import requests
 from os import environ
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 
@@ -24,3 +25,6 @@ def get_user_names(token, hotel):
             'cahierId': dados.keys(),
             'cashierName': dados.values()
         }
+    else:
+        st.error(f"{response.text} on get_user_names")
+        return False

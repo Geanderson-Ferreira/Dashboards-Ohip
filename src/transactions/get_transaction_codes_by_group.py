@@ -2,6 +2,7 @@ import requests
 import json
 from os import environ
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 
@@ -22,4 +23,5 @@ def get_codes_by_group(hotel, token, group):
   if response.status_code == 200:
       return [item['code'] for item in response.json()['transactionCodes']]
   else:
+      st.error(f"{response.text} on get_codes_by_group")
       return False

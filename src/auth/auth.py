@@ -58,9 +58,11 @@ def authenticate_this(function):
         username = user_container.text_input("Username")
         password = pass_container.text_input("Password", type="password")
         login_button = btn_container.button("Login")
-
+        
         if login_button:
+
             auth.check(username, password)
+        
 
     if 'logged' in st.session_state:
         if st.session_state['logged']:
