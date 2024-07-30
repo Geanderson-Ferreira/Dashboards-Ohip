@@ -161,8 +161,9 @@ def transactions_dash():
         df['transactionAmount'] = df['transactionAmount'].apply(to_money)
 
         #---------------- Show dataframe
-        cols_to_show = ["transactionDate", "transactionCodeName", "transactionAmount", "reference", "remark", "guestInfo.guestName", "guestInfo.roomId", "guestInfo.confirmationNo"]
+        cols_to_show = ["transactionDate", "transactionCodeName", "transactionAmount", "reference", "remark", "cashierName", "guestInfo.guestName", "guestInfo.roomId", "guestInfo.confirmationNo"]
 
         st.write("Relatório de Lancamentos")
-        st.dataframe(df, hide_index=True, use_container_width=True)
-        # st.dataframe(df[cols_to_show], hide_index=True, use_container_width=True)
+        st.dataframe(df[cols_to_show], hide_index=True, use_container_width=True)
+        # st.dataframe(df, hide_index=True, use_container_width=True)
+        
