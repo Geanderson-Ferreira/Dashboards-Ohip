@@ -164,4 +164,5 @@ def transactions_dash():
         cols_to_show = ["transactionDate", "transactionCodeName", "transactionAmount", "reference", "remark", "guestInfo.guestName", "guestInfo.roomId", "guestInfo.confirmationNo"]
 
         st.write("Relatório de Lancamentos")
-        st.dataframe(df[cols_to_show], hide_index=True, use_container_width=True)
+        st.dataframe(df, hide_index=True, use_container_width=True)
+        # st.dataframe(df[cols_to_show], hide_index=True, use_container_width=True)
