@@ -8,8 +8,8 @@ from src.utils import to_money
 import pandas as pd
 import datetime
 import plotly.express as px
-
-from modules.tcpos import get_df_pandas_tcpos_transactions
+from modules.tcpos import show_tcpos_data
+# from src.tcpos.tcpos import get_df_pandas_tcpos_transactions
 
 def transactions_dash():
 
@@ -38,7 +38,7 @@ def transactions_dash():
         return
 
     st.sidebar.divider()
-    st.sidebar.title("Partições")
+    st.sidebar.title("Filtros Ópera")
 
     if 'data_final' in st.session_state:
         if filter_hotel != st.session_state['filter_hotel'] or data_inicial != st.session_state['data_inicial'] or data_final != st.session_state['data_final']:
@@ -180,8 +180,7 @@ def transactions_dash():
         st.divider()
 
         if filter_revenue_group == 'Food & Beverage Revenue':
-            st.title("Relatório de Lancamentos (TCPOS)")
-            df_tcpos = get_df_pandas_tcpos_transactions(data_inicial, data_final, filter_hotel)
+            show_tcpos_data(data_inicial, data_final, filter_hotel)
 
-            st.dataframe(df_tcpos)
+            
         
