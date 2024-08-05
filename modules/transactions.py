@@ -169,5 +169,9 @@ def transactions_dash():
 
         st.write("Relatório de Lancamentos")
         st.dataframe(df[cols_to_show], hide_index=True, use_container_width=True)
+
+        df['transactionAmount'] = df['transactionAmount'].str.replace('.', '').str.replace(',', '.')
+        df['transactionAmount'] = pd.to_numeric(df['transactionAmount'])
+        st.write("SOMA TOTAL:", to_money(float(df['transactionAmount'].sum())))
         # st.dataframe(df, hide_index=True, use_container_width=True)
         
