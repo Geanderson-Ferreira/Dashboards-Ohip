@@ -9,6 +9,7 @@ import pandas as pd
 import datetime
 import plotly.express as px
 
+from modules.tcpos import get_df_pandas_tcpos_transactions
 
 def transactions_dash():
 
@@ -167,7 +168,7 @@ def transactions_dash():
         #---------------- Show dataframe
         cols_to_show = ["transactionDate", "transactionCodeName", "transactionAmount", "reference", "remark", "cashierName", "guestInfo.guestName", "guestInfo.roomId", "guestInfo.confirmationNo"]
 
-        st.write("Relatório de Lancamentos")
+        st.title("Relatório de Lancamentos (ÓPERA)")
         st.dataframe(df[cols_to_show], hide_index=True, use_container_width=True)
 
         df['transactionAmount'] = df['transactionAmount'].str.replace('.', '').str.replace(',', '.')
@@ -175,4 +176,12 @@ def transactions_dash():
         st.write("SOMA TOTAL:", to_money(float(df['transactionAmount'].sum())))
         st.write("MEDIA DIARIA:", to_money(float(df['transactionAmount'].sum()) / float((data_final - data_inicial).days + 1)))
         # st.dataframe(df, hide_index=True, use_container_width=True)
+
+        st.divider()
+
+        if filter_revenue_group == 'Food & Beverage Revenue':
+            st.title("Relatório de Lancamentos (TCPOS)")
+            df_tcpos = get_df_pandas_tcpos_transactions(data_inicial, data_final, filter_hotel)
+
+            st.dataframe(df_tcpos)
         
