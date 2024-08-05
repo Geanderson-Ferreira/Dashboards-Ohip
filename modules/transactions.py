@@ -173,5 +173,6 @@ def transactions_dash():
         df['transactionAmount'] = df['transactionAmount'].str.replace('.', '').str.replace(',', '.')
         df['transactionAmount'] = pd.to_numeric(df['transactionAmount'])
         st.write("SOMA TOTAL:", to_money(float(df['transactionAmount'].sum())))
+        st.write("MEDIA DIARIA:", to_money(float(df['transactionAmount'].sum()) / float((data_final - data_inicial).days + 1)))
         # st.dataframe(df, hide_index=True, use_container_width=True)
         
