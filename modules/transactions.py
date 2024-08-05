@@ -115,9 +115,13 @@ def transactions_dash():
             df = df[df['transactionType'] == transaction_type_filter]
 
         #------------- Filtro de Transaction code Name
-        transaction_name_filter = st.sidebar.selectbox("Código de Transação", ["Todos"] + sorted(df["transactionCodeName"].unique()))
-        if transaction_name_filter != "Todos":
-            df = df[df['transactionCodeName'] == transaction_name_filter]
+        transaction_name_filter = st.sidebar.multiselect("Código de Transação", sorted(df["transactionCodeName"].unique()))
+        if len(transaction_name_filter)  != 0:
+            df = df.loc[df['transactionCodeName'].isin(transaction_name_filter)]
+            
+        # transaction_name_filter = st.sidebar.selectbox("Código de Transação", ["Todos"] + sorted(df["transactionCodeName"].unique()))
+        # if transaction_name_filter != "Todos":
+        #     df = df[df['transactionCodeName'] == transaction_name_filter]
 
         #----------- Filtro de usuários
         cashier_name_filter = st.sidebar.selectbox("Usuário", ["Todos"] + sorted(df["cashierName"].unique()))
