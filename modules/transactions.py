@@ -12,8 +12,8 @@ import plotly.express as px
 
 def transactions_dash():
 
-    limit_allowed_return_transactions = "50000"
-    limit_of_interval_of_dates_inputs = 15
+    limit_allowed_return_transactions = "100000"
+    limit_of_interval_of_dates_inputs = 31
 
     st.title("Revenue Viewer")
     st.sidebar.title("Obter Dados")
