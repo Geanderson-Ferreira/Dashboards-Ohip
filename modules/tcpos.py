@@ -33,7 +33,7 @@ def show_tcpos_data(data_inicial, data_final, filter_hotel):
 
 
 
-    title_1 = f"Titulo"
+    title_1 = f"Quantidade de vendas"
     df_grouped_by_code = df.groupby(["articleDescription"])["quantity"].sum().reset_index()
 
     fig_prod = px.bar(df_grouped_by_code.sort_values("quantity").tail(30), 
