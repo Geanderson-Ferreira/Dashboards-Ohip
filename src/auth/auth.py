@@ -12,7 +12,12 @@ def get_token(username, password):
 
     url = f"{environ['APIGW_URL']}/oauth/v1/tokens"
 
-    payload = f'username={username}&password={password}&grant_type=password'
+    payload = {
+       "username":username,
+       "password":password,
+       "grant_type":password
+    }
+    
     headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'x-app-key': environ['APP_KEY'],
