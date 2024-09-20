@@ -15,9 +15,9 @@ def get_token(username, password):
     payload = {
        "username":username,
        "password":password,
-       "grant_type":password
+       "grant_type":"password"
     }
-    
+
     headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'x-app-key': environ['APP_KEY'],
