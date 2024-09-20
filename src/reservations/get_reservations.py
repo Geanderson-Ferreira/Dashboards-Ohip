@@ -22,21 +22,39 @@ def get_reservations(hotel, token, filters: dict):
   for col in itens_to_remove:
       del filtered_dict[col]
   
-  url = f"{environ['APIGW_URL']}/rsv/v1/hotels/{hotel}/reservations?limit=500"
+  response_data = list()
+  hasMore = True
+  offset=1
+  while hasMore:
+      # Requisição de reservas
+      url = f"{environ['APIGW_URL']}/rsv/v1/hotels/{hotel}/reservations?limit=200&offset={offset}"
+      
+      headers = {
+          'Content-Type': 'application/json',
+          'x-hotelid': hotel,
+          'x-app-key': environ['APP_KEY'],
+          'Authorization': f'Bearer {token}'
+      }
 
-  payload = ""
-  headers = {
-    'Content-Type': 'application/json',
-    'x-hotelid': hotel,
-    'x-app-key': environ['APP_KEY'],
-    'Authorization': f'Bearer {token}'
-  }
+      response = requests.get(url, headers=headers, params=filtered_dict)
+    #   st.write(response.url)
 
-  response = requests.get(url, headers=headers, data=payload, params=filtered_dict)
-  # st.write(response.url)  
+      if response.status_code != 200:
+          hasMore = False
+          # log.error(f"Erro ao obter reservas do hotel {hotel}")
+          continue
 
-  if response.status_code == 200:
-    return response.json()
-  else:
-     st.error(f"{response.text} on get_reservations")
-     return False
+      if response.json().get('reservations', {}).get('totalResults', 0) == 0:
+          hasMore = False
+          # log.info(f"Hotel {hotel} possui zero resultados.")
+          continue
+      
+      response_data.extend(response.json()['reservations']['reservationInfo'])
+
+      hasMore = response.json()['reservations']['hasMore']
+      offset = response.json()['reservations']['offset']
+  
+
+  #
+  response.json()['reservations']['reservationInfo'] = response_data
+  return response_data

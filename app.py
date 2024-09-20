@@ -4,9 +4,9 @@ Habilitar estes modules no controller.py e coloca-los no .env.
 """
 
 import streamlit as st
-from src.auth.auth import authenticate_this
 from os import environ
 from dotenv import load_dotenv
+from src.auth.auth import authenticate_this
 from src.controller import level_of_access
 from modules import *
 
@@ -18,11 +18,10 @@ st.set_page_config(layout="wide")
 def main():
 
     if not 'module' in st.session_state:
-
         for module in modules:
             globals()['ctn' + module] = st.empty()
             globals()['btn' + module] = globals()['ctn' + module].button(module)
-        
+
         st.session_state['created_module_buttons'] = True
 
         for module in modules:
@@ -38,5 +37,4 @@ def main():
         authenticate_this(globals()[level_of_access[st.session_state['module']]])
 
 if __name__ == "__main__":
-
     authenticate_this(main)

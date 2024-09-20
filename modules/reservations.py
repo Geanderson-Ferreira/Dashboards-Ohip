@@ -12,6 +12,7 @@ def reservations_dash():
     #Apresentação dos filtros
     data_to_search = show_filters()
 
+
     #Gatilho da busca
     search = st.sidebar.button("Buscar")
 
@@ -21,14 +22,14 @@ def reservations_dash():
         reservations = get_reservations(data_to_search['hotelId'], st.session_state['token'], data_to_search)
         if not reservations:
             return
-        df_reservations = pd.DataFrame((flatten(d) for d in reservations['reservations']['reservationInfo']))
+        df_reservations = pd.DataFrame((flatten(d) for d in reservations))
 
         #Constrói o dataframe de Profiles
         profile_ids = df_reservations['reservationGuest_id'].unique()
         profiles = get_profiles_by_ids(data_to_search['hotelId'], st.session_state['token'], profile_ids)
         if not profiles:
             return
-        df_profiles = pd.json_normalize((flatten(d) for d in profiles['profiles']['profileInfo']))
+        df_profiles = pd.json_normalize((flatten(d) for d in profiles))
         
         #Mostra o DataFrame de reservas
         st.subheader("Reservations")

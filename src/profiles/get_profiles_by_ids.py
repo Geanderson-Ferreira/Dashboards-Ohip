@@ -5,26 +5,36 @@ import streamlit as st
 
 load_dotenv()
 
-def get_profiles_by_ids(hotel, token, ids_list: list):
+def get_profiles_by_ids(hotel, token, ids: list):
 
-    ids = {
-        'profileIds': ids_list
-    }
 
-    url = f"{environ['APIGW_URL']}/crm/v1/profilesByIds?limit=500"
+    limit = 190
+    all_profiles = []
 
-    payload = ""
+    for i in range(0, len(ids), limit):
 
-    headers = {
-    'x-hotelid': hotel,
-    'x-app-key': environ['APP_KEY'],
-    'Authorization': f'Bearer {token}'
-    }
+        ids_to_request = ids[i:i + limit]
 
-    response = requests.get(url, headers=headers, data=payload, params=ids)
+        url = f"{environ['APIGW_URL']}/crm/v1/profilesByIds"
 
-    if response.status_code == 200:
-        return response.json()
-    else:
-        st.error(f"{response.text} on get_profiles_by_ids")
-        return False
+        payload = {}
+        headers = {
+        'x-hotelid': hotel,
+        'x-app-key': environ['APP_KEY'],
+        'Authorization': f'Bearer {token}'
+        }
+
+        params = {
+            "profileIds": ids_to_request,
+        "fetchInstructions": ["Address", "Comment", "Communication", "Profile"]
+        }
+
+        response = requests.request("GET", url, headers=headers, data=payload, params=params)
+
+        if response.status_code == 200:
+            all_profiles.extend(response.json()['profiles'].get('profileInfo',[]))
+        else:
+            print(response.text)
+            return False
+        
+    return all_profiles

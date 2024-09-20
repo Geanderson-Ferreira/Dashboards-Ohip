@@ -10,7 +10,7 @@ def show_filters():
     arrival_to = st.sidebar.date_input("Arrival To", value=None)
     departure_from = st.sidebar.date_input("Departure From", value=None)
     departure_to = st.sidebar.date_input("Departure to", value=None)
-    created_on = st.sidebar.date_input("Created On", value=None)
+    created_on_start = st.sidebar.date_input("Created On", value=None)
     confirmation_number_list = st.sidebar.text_input("Confirmation Number List")
     external_reference_ids = st.sidebar.text_input("External Reference List")
 
@@ -28,16 +28,16 @@ def show_filters():
         "hotelId": filter_hotel,
         "arrivalStartDate": arrival_from, "arrivalEndDate": arrival_to,
         "departureStartDate": departure_from, "departureEndDate": departure_to,
-        "createdOn": created_on, "confirmationNumberList": confirmation_number_list.split(","),
+        "createdOnStartDate": created_on_start, "confirmationNumberList": confirmation_number_list.split(","),
         "externalReferenceIds": external_reference_ids.split(","),
         "dayOfArrivalCancels": todays_cancellation,
         "earlyDepartures": early_departures, "expectedArrivals": expected_arrivals,
         "expectedDepartures": expected_departures, "extendedStays": extended_stays
     }
-    data_to_search['searchType'] = list()
+    data_to_search['searchTypes'] = list()
     for key, val in search_types.items():
 
         if globals()[search_types[key]]:
-            data_to_search['searchType'].append(search_types[key])
+            data_to_search['searchTypes'].append(search_types[key])
     
     return data_to_search
